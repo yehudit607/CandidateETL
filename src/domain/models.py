@@ -1,8 +1,3 @@
-"""Domain models for the Candidate ETL Pipeline.
-
-All models are implemented as frozen dataclasses per Constitution Principle I.
-"""
-
 from dataclasses import dataclass
 from datetime import date
 from typing import Literal

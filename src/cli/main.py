@@ -1,5 +1,3 @@
-"""Command-line interface for the Candidate ETL Pipeline."""
-
 import argparse
 import os
 import sys
@@ -18,16 +16,6 @@ DEFAULT_DB_NAME = os.environ.get("MONGODB_DATABASE", "candidate_etl")
 
 
 def format_error(error_type: str, message: str, suggestion: str | None = None) -> str:
-    """Format error messages consistently across all commands.
-
-    Args:
-        error_type: Category of the error (e.g., "Fetch Error", "Parse Error").
-        message: The error message describing what went wrong.
-        suggestion: Optional suggestion for how to resolve the error.
-
-    Returns:
-        Formatted error string.
-    """
     lines = [f"[ERROR] {error_type}: {message}"]
     if suggestion:
         lines.append(f"        Suggestion: {suggestion}")

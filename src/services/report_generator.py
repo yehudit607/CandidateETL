@@ -7,20 +7,6 @@ from src.domain.models import GapReport
 
 
 def format_gap_report_text(report: GapReport) -> str:
-    """Format a gap report as human-readable text matching exact specification.
-
-    Output format per specification:
-        Hello [Name],
-        Worked as: [Title], From [Date] To [Date] in [Location]
-        Gap in CV for X days
-        Worked as: [Title], From [Date] To [Date] in [Location]
-
-    Args:
-        report: The gap report to format.
-
-    Returns:
-        Formatted text report matching specification.
-    """
     lines = [f"Hello {report.candidate_name},"]
 
     if not report.entries:

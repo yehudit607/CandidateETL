@@ -1,0 +1,43 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Testing artifacts (keep tests/ folder for running tests in container)
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# IDE
+.idea/
+.vscode/
+
+# Environment
+.env*
+
+# Documentation
+*.md
+!README.md
+docs/
+specs/
+.specify/
+.claude/
+CLAUDE.md
+
+# Logs
+*.log
+
+# OS
+.DS_Store

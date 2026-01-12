@@ -13,12 +13,7 @@ from src.domain.models import Candidate, FilterCriteria, Job
 
 
 class CandidateRepository(ABC):
-    """Abstract base class for candidate persistence.
-
-    Implements the Repository Pattern per Constitution Principle I
-    (Dependency Inversion) to decouple business logic from storage.
-    """
-
+    
     @abstractmethod
     def save_filtered_candidates(
         self,
@@ -37,11 +32,6 @@ class CandidateRepository(ABC):
 
 
 class MongoRepository(CandidateRepository):
-    """MongoDB implementation of CandidateRepository.
-
-    Uses pymongo for database operations per Constitution Principle II.
-    Uses bulk operations (insert_many) per Constitution Principle III.
-    """
 
     COLLECTION_NAME = "filtered_candidates"
 

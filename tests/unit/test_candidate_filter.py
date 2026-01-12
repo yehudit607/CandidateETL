@@ -151,38 +151,6 @@ class TestExperienceCalculation:
 class TestMatchesCriteria:
     """Tests for combined filter criteria matching."""
 
-    def test_matches_all_criteria(self) -> None:
-        """Matches when all criteria are satisfied."""
-        job = Job("Dev", "Corp", "Technology", "City, ST, US", date(2018, 1, 1), date(2023, 1, 1))
-        candidate = Candidate("Jane", ("python", "sql"), (job,))
-        criteria = FilterCriteria("technology", ("python",), 3.0)
-
-        assert matches_criteria(candidate, criteria) is True
-
-    def test_no_match_industry_mismatch(self) -> None:
-        """Does not match when industry doesn't match."""
-        job = Job("Dev", "Corp", "Technology", "City, ST, US", date(2018, 1, 1), date(2023, 1, 1))
-        candidate = Candidate("Jane", ("python",), (job,))
-        criteria = FilterCriteria("finance", ("python",), 3.0)
-
-        assert matches_criteria(candidate, criteria) is False
-
-    def test_no_match_skills_mismatch(self) -> None:
-        """Does not match when skills don't match."""
-        job = Job("Dev", "Corp", "Technology", "City, ST, US", date(2018, 1, 1), date(2023, 1, 1))
-        candidate = Candidate("Jane", ("java",), (job,))
-        criteria = FilterCriteria("technology", ("python",), 3.0)
-
-        assert matches_criteria(candidate, criteria) is False
-
-    def test_no_match_experience_insufficient(self) -> None:
-        """Does not match when experience is insufficient."""
-        job = Job("Dev", "Corp", "Technology", "City, ST, US", date(2022, 1, 1), date(2023, 1, 1))
-        candidate = Candidate("Jane", ("python",), (job,))
-        criteria = FilterCriteria("technology", ("python",), 5.0)
-
-        assert matches_criteria(candidate, criteria) is False
-
     @pytest.mark.parametrize(
         "industry,skills,min_years,expected",
         [

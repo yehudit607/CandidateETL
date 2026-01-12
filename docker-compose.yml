@@ -14,7 +14,51 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - candidate-etl-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: candidate-etl-app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=candidate_etl
+    volumes:
+      # Mount source code for development (hot reload)
+      - ./src:/app/src
+      - ./tests:/app/tests
+    networks:
+      - candidate-etl-network
+    # Override command to keep container running for interactive use
+    command: tail -f /dev/null
+
+  # Service to run tests
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=candidate_etl_test
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+    networks:
+      - candidate-etl-network
+    command: python -m pytest tests/ -v
 
 volumes:
   mongo_data:
     driver: local
+
+networks:
+  candidate-etl-network:
+    driver: bridge

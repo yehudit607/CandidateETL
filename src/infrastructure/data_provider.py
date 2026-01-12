@@ -2,6 +2,7 @@
 
 import json
 import logging
+import ssl
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from datetime import date
@@ -10,8 +11,11 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
+import certifi
+
 from src.domain.exceptions import DataFetchError, DataParseError
 from src.domain.models import Candidate, Job
+from src.infrastructure.data_transformer import load_and_transform_hiredscore_json
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +23,7 @@ logger = logging.getLogger(__name__)
 class DataProvider(ABC):
     """Abstract base class for candidate data providers.
 
-    Implementations must use generators for memory-efficient streaming
-    per Constitution Principle III (Performance & Scalability).
-    """
+    Implementations must use generators for memory-efficient streaming of candidate records. """
 
     @abstractmethod
     def stream_candidates(self) -> Iterator[Candidate]:
@@ -30,9 +32,6 @@ class DataProvider(ABC):
 
 class UrlDataProvider(DataProvider):
     """Fetches candidate data from a remote URL.
-
-    Uses urllib.request for HTTP operations per Constitution Principle II
-    (Minimal Dependencies - prefer Standard Library).
     """
 
     def __init__(self, url: str, timeout: int = 30) -> None:
@@ -50,9 +49,20 @@ class UrlDataProvider(DataProvider):
 
     def _fetch_json(self) -> dict[str, Any]:
         try:
-            with urlopen(self.url, timeout=self.timeout) as response:
+            # Create SSL context with certifi's CA bundle
+            ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+            with urlopen(self.url, timeout=self.timeout, context=ssl_context) as response:
                 raw_data = response.read()
-                return json.loads(raw_data.decode("utf-8"))
+                json_content = raw_data.decode("utf-8")
+
+                # Auto-detect and transform HiredScore format
+                try:
+                    return load_and_transform_hiredscore_json(json_content)
+                except ValueError:
+                    # If transformation fails, try parsing as-is
+                    return json.loads(json_content)
+
         except HTTPError as e:
             raise DataFetchError(f"HTTP error {e.code}: {e.msg}") from e
         except URLError as e:

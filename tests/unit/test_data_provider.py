@@ -14,20 +14,19 @@ from src.infrastructure.data_provider import UrlDataProvider
 class TestUrlDataProviderInit:
     """Tests for UrlDataProvider initialization."""
 
-    def test_init_with_url(self) -> None:
-        """Provider initializes with URL."""
-        provider = UrlDataProvider("https://example.com/candidates.json")
-        assert provider.url == "https://example.com/candidates.json"
-
-    def test_init_with_custom_timeout(self) -> None:
-        """Provider initializes with custom timeout."""
-        provider = UrlDataProvider("https://example.com/data.json", timeout=60)
-        assert provider.timeout == 60
-
-    def test_init_default_timeout(self) -> None:
-        """Provider uses default timeout of 30 seconds."""
-        provider = UrlDataProvider("https://example.com/data.json")
-        assert provider.timeout == 30
+    @pytest.mark.parametrize(
+        "url,timeout,expected_timeout",
+        [
+            ("https://example.com/data.json", None, 30),  # Default timeout
+            ("https://example.com/data.json", 60, 60),  # Custom timeout
+        ],
+        ids=["default_timeout", "custom_timeout"],
+    )
+    def test_initialization(self, url: str, timeout: int | None, expected_timeout: int) -> None:
+        """Provider initializes with URL and timeout."""
+        provider = UrlDataProvider(url) if timeout is None else UrlDataProvider(url, timeout=timeout)
+        assert provider.url == url
+        assert provider.timeout == expected_timeout
 
 
 class TestUrlDataProviderStreamCandidates:
